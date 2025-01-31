@@ -1,0 +1,279 @@
+openapi: 3.0.0
+info:
+  version: '1'
+  title: 'fullStack-Blogify'
+  description: 'this is the first professional api which name is blog api where user can create account and login after that they make article and it will be shown publicly'
+  contact:
+    name: jillur rahman
+    url: https://jillur.com
+    email: jllur.cse.bd@gmail.com
+
+
+servers:
+  # Added by API Auto Mocking Plugin
+  - description: SwaggerHub API Auto Mocking
+    url: https://virtserver.swaggerhub.com/JILLURCSEBD/blogapi/1
+  - description: dev
+    url: http://localhost:4000/api/v1
+
+tags:
+  - name: Auth
+    description: authentication endpoints(public)
+  - name: Article
+    description: Article endpoints (Public+Private)
+  - name: Comment
+    description: comment endpoints (private)
+  - name: User
+    description: user endpoints (admin only)
+paths:
+  '/auth/signup':
+    post:
+      description: create a new account
+      tags: [Auth]
+      requestBody:
+        content:
+          'application/json' :
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Jillur Rahman
+                email:
+                  type: string
+                  format: email
+                  example: jillur@example.com
+                password :
+                  type: string
+                  format: password
+                  example: password@1
+              required: [name,email,password]
+      responses:
+        '201':
+          description: Sign up SuccesFully
+          content:
+            'application/json':
+                schema:
+                  type: object
+                  properties:
+                    code:
+                      type: integer
+                      format: int32
+                      example: 201
+                    message:
+                      type: string
+                      example: signup SuccesFully
+                    data:
+                      type: object
+                      properties:
+                        access_token:
+                          type: string
+                          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6
+                    links:
+                      type: object
+                      properties:
+                        self:
+                          type: string
+                          example: '/auth/signup'
+                        signin:
+                          type: string
+                          example: '/auth/signin'
+        '400':
+          $ref: '#/components/responses/400'
+  '/auth/signin':
+    post:
+      description: sign in SuccesFully
+      tags: [Auth]
+      requestBody:
+        content:
+          'application/json' :
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Jillur Rahman
+                email:
+                  type: string
+                  format: email
+                  example: jillur@example.com
+                password :
+                  type: string
+                  format: password
+                  example: password@1
+              required: [name,email,password]
+      responses:
+        '200':
+          description: Sign in SuccesFully
+          content:
+            'application/json':
+                schema:
+                  type: object
+                  properties:
+                    code:
+                      type: integer
+                      format: int32
+                      example: 201
+                    message:
+                      type: string
+                      example: sign in succesFully
+                    data:
+                      type: object
+                      properties:
+                        access_token:
+                          type: string
+                          example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6
+                    links:
+                      type: object
+                      properties:
+                        self:
+                          type: string
+                          example: '/auth/signin'
+                        signup:
+                          type: string
+                          example: '/auth/signup'
+        '400':
+          $ref: '#/components/responses/400'
+
+  '/articles':
+    get:
+      description: retrive all published articles
+      tags: [Article]
+      parameters:
+        - $ref: "#/components/parameters/pageParam"
+
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+      responses:
+        '200':
+          description: return a list of article
+          content:
+            'application/json':
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      
+                      type: object
+                      properties:
+                        id:
+                          type: integer
+                          format: int32
+                          example: 1
+                        title:
+                          type: string
+                          example: first article
+                        cover:
+                          type: string
+                          format: url
+                          example: https://jillur.com/123/jillur.jpg
+                        author:
+                          $ref: "#/components/schemas/AuthorDTO" 
+                        link:
+                          type: string
+                          format: url
+                          example: '/articles/1'
+                required: [id,title,author]     
+               
+                  # - $ref: '#/components/schemas/Timestamp'
+                      
+                        # Timestamp:
+                        #   $ref: '#/components/schemas/Timestamp'
+
+
+
+# ami component a eta rakhlam jate sob khane use korte pari
+components:
+  schemas:
+    Timestamp:
+      type: object
+      properties:
+        cretedAt:
+          type: string
+          format: dateTime
+        updatedAt:
+          type: string
+          format: dateTime
+      required: [cretedAt,updatedAt]
+    AuthorDTO:
+      type: object
+      properties:
+        id:
+          type: integer
+          format: int32
+          example: 1
+        name:
+          type: string
+          example: "Md. Jillur Rahman"
+      required: [id,name]
+
+  responses:
+    '400':
+        description: "Bad Request"
+        content:
+          'application/json'  :
+              schema:
+                  type: object
+                  properties:
+                    code:
+                        type: integer
+                        format: int32
+                        example: 400
+                    error:
+                        type: object
+                        example: Bad Request
+                    data:
+                      type: array
+                      items:
+                        type: object
+                        properties:
+                          field:
+                            type: string
+                            example: email
+                          message:
+                            type: string
+                            example: Invalid Email
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      description: current page number
+      schema:
+          type: integer
+          format: int32
+          example: 2
+    limitParam:
+          in: query
+          name: limit
+          description: maximum item to be returned
+          schema:
+              type: integer
+              format: int32
+              example: 10
+    sortTypeParam:
+          in: query
+          name: sort_type
+          description: type of sort (asc or dsc)
+          schema:
+              type: integer
+              enum: [asc,dsc]
+              example: dsc
+    sortByParam:
+              in: query
+              name: sort_by
+              description: sort key
+              schema:
+                  type: string
+                  example: updatedAt
+    searchParam:
+        in: query
+        name: search
+        description: search term
+        schema:
+            type: string
+            example: title
+

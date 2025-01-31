@@ -1,0 +1,171 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: "full stack bolgify"
+  description: "this is my Test Practise for Sweeger Documentation"
+  contact:
+    name: Jillur Rahman Mamdud
+    url: https://jillur.com
+    email: jillur.mernstackdev@gmail.com
+
+servers:
+  # added by API Auto Mocking System
+  - description: SwaggerHub Auto Mocking System
+    url: 'https://virtserver.swaggerhub.com/JILLURCSEBD/blogapi/1'
+  - description: dev
+    url: 'http://localhost:4000/api/v1'
+tags:
+  - name: Auth
+    description: Authentication endpoints(Public)
+  - name: Article
+    description: Articles Endpoints (Public + Private)
+  - name: Comments
+    description: comments endpoints (private)
+  - name: User
+    description: user endpoints (Admin Only)
+paths:
+  '/auth/signup':
+    post:
+      description: create a new Account
+      tags: [Auth]
+      requestBody:
+        content:
+          'application/json':
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  example: Md. Jillur Rahman
+                email:
+                  type: string
+                  example: jillur.cse.bd@gmail.com
+                password:
+                  type: string
+                  format: password
+                  example: password@1
+              required: [name,email,password]
+      responses:
+        '201':
+          description: sign up succesfully
+          content:
+            "application/json":
+              schema:
+                type: object
+                properties:
+                  code:
+                    type: integer
+                    format: int32
+                    example: 201
+                  message:
+                    type: string
+                    example: 'sign up succesfully'
+                  data:
+                    type: object
+                    properties:
+                      access_token:
+                        type: string
+                        example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6
+                  links:
+                    type: object
+                    properties:
+                      self:
+                        type: string
+                        example: '/auth/signup'
+                      signin:
+                        type: string
+                        example: '/auth/signin'
+        '400': 
+          $ref: '#/components/responses/400'
+
+
+
+
+  '/articles':
+    get: 
+      description: 'Retrive all published articles '
+      tags: [Article]
+      parameters:
+        - $ref: '#/components/parameters/pageParam'
+        - $ref: '#/components/parameters/limitParam'
+        - $ref: '#/components/parameters/sortTypeParam'
+        - $ref: '#/components/parameters/sortByParam'
+        - $ref: '#/components/parameters/searchParam'
+        
+
+
+
+components:
+  responses:
+    '400':
+      description: 'Bad Request'
+      content:
+        'application/json':
+          schema:
+            type: object
+            properties:
+              code:
+                type: integer
+                format: int32
+                example: 400
+              error:
+                type: object
+                example: "Bad Request"
+              data:
+                type: object
+              items:
+                type: object
+                properties:
+                  field:
+                    type: string
+                    example: email
+                  message:
+                    type: string
+                    example: 'Invalid Email'
+  
+
+  parameters:
+    pageParam:
+      in: query
+      name: page
+      description: current page number
+      schema:
+        type: integer
+        format: int32
+        example: 2
+    limitParam:
+      in: query
+      name: limit
+      description: maximum item to be returned
+      schema:
+       type: integer
+       format: int32
+       example: 10
+    sortTypeParam:
+      in: query
+      name: sort_type
+      description: sorted by asc or dsc
+      schema:
+        type: integer
+        enum: [asc,dsc]
+        example: dsc   
+    sortByParam:
+      in: query
+      name: sort_by
+      description: sort key
+      schema:
+        type: string
+        example: updatedAt
+    searchParam:
+      in: query
+      name: search
+      description: searching
+      schema:
+        type: string
+        example: title
+    
+
+
+     
+    
+        
